@@ -78,6 +78,8 @@ jobs:
 
       - name: Publish to gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
+        permissions:
+          contents: write
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./repo
