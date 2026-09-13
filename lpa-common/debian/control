@@ -1,0 +1,18 @@
+Maintainer: Rolf Leggewie <foss@leggewie.org>
+Section: metapackages
+Source: rl-common
+Priority: optional
+Standards-Version: 4.6.2
+Build-Depends: debhelper-compat (= 13)
+
+#############################################################################
+
+Package: lpa-common
+Description: Packages I want to have installed on all computers
+ .
+ Packages in Depends create a minimal system, enhanced by those in Recommends
+ This could be used to separate a minimal from an everyday system.
+Priority: required
+Architecture: all
+Recommends:
+ nano
