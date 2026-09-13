@@ -1,13 +1,13 @@
 Maintainer: Rolf Leggewie <foss@leggewie.org>
 Section: metapackages
-Source: rl-common
+Source: lpa-common
 Priority: optional
 Standards-Version: 4.6.2
 Build-Depends: debhelper-compat (= 13)
 
 #############################################################################
 
-Package: lpa-common
+Package: lpa-base
 Description: Packages I want to have installed on all computers
  .
  Packages in Depends create a minimal system, enhanced by those in Recommends
