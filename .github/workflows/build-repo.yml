@@ -62,8 +62,23 @@ jobs:
           Architectures: amd64 arm64 armhf
           Components: main
           Description: PPA-like repository built from GitHub Actions
-          #SignWith: no
+          SignWith: 104C6DC95DD59599A96FD9F82777C04CF040B50D
           EOF
+
+      - name: Import GPG signing key
+        run: |
+          mkdir -p ~/.gnupg
+          chmod 700 ~/.gnupg
+          echo "$REPO_SIGNING_KEY" | gpg --batch --import
+        env:
+          REPO_SIGNING_KEY: ${{ secrets.REPO_SIGNING_KEY }}
+
+      - name: Configure gpg-agent for signing
+        run: |
+          cat > ~/.gnupg/gpg-agent.conf <<'EOF'
+          allow-loopback-pinentry
+          EOF
+          gpgconf --kill gpg-agent || true
 
       - name: Import packages
         run: |
