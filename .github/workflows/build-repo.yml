@@ -181,7 +181,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y reprepro gnupg gpg-agent
 
-      - name: Import GPG signing key
+      - name: Import GPG signing key and prepare GPG agent
         env:
           REPO_SIGNING_KEY: ${{ secrets.REPO_SIGNING_KEY }}
           GPG_PASSPHRASE: ${{ secrets.REPO_SIGNING_PASSPHRASE }}
@@ -196,11 +196,6 @@ jobs:
           max-cache-ttl 3600
           no-tty
           EOF
-
-#          gpgconf --kill gpg-agent || true
-#
-#          # Give gpg-agent time to restart
-#          sleep 1
 
           # Unlock the key by signing a test stream - this caches the passphrase
           echo "test" | gpg --batch --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --sign > /dev/null
