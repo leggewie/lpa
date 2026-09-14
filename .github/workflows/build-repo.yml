@@ -184,21 +184,19 @@ jobs:
       - name: Import GPG signing key
         env:
           REPO_SIGNING_KEY: ${{ secrets.REPO_SIGNING_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.REPO_SIGNING_PASSPHRASE }}
         run: |
           mkdir -p ~/.gnupg
           chmod 700 ~/.gnupg
           echo "$REPO_SIGNING_KEY" | gpg --batch --import
 
-      - name: Configure gpg-agent for signing
-        env:
-          GPG_PASSPHRASE: ${{ secrets.REPO_SIGNING_PASSPHRASE }}
-        run: |
           cat > ~/.gnupg/gpg-agent.conf <<'EOF'
           allow-loopback-pinentry
           default-cache-ttl 600
           max-cache-ttl 3600
           no-tty
           EOF
+
 #          gpgconf --kill gpg-agent || true
 #
 #          # Give gpg-agent time to restart
