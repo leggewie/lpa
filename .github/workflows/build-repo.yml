@@ -37,10 +37,6 @@ jobs:
           fi
 
           echo "$REPO_SIGNING_KEY" | gpg --batch --import --passphrase "$GPG_PASSPHRASE" --passphrase-fd 0
-        env:
-          REPO_SIGNING_KEY: ${{ secrets.REPO_SIGNING_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.REPO_SIGNING_PASSPHRASE }}
-
 
       - name: Configure gpg-agent for signing
         run: |
