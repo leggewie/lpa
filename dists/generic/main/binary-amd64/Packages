@@ -1,19 +1,16 @@
-Package: lpa-base
+Package: lpa-fake-binary
 Source: lpa-common
 Version: 260914-1
-Architecture: all
+Architecture: amd64
 Maintainer: Rolf Leggewie <foss@leggewie.org>
 Installed-Size: 7
-Recommends: nano
-Priority: required
-Section: metapackages
-Filename: pool/main/l/lpa-common/lpa-base_260914-1_all.deb
-Size: 972
-SHA256: 00a81738c31d8e97211869c821e35f2a5851bad65968620d1383a7da53ea566f
-SHA1: 870788ed74e7b29f55f9df8cf69f24a394363ddb
-MD5sum: 23bd845970063c69f1df226693e7c38e
-Description: Packages I want to have installed on all computers
- .
- Packages in Depends create a minimal system, enhanced by those in Recommends
- This could be used to separate a minimal from an everyday system.
+Recommends: tmux
+Priority: optional
+Section: misc
+Filename: pool/main/l/lpa-common/lpa-fake-binary_260914-1_amd64.deb
+Size: 904
+SHA256: 899aa09f7ee0915db4bbb7af03a64a0f5e9a240b73fcb7335b7e15b4fdffc1a1
+SHA1: 3a67a7deb195d9cda2bdc3ee238cdbb642897aa4
+MD5sum: c471687b61fbeda2242097cf28263560
+Description: fake package for testing binary compilation
 

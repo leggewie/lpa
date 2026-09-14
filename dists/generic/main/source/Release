@@ -2,5 +2,5 @@ Archive: stable
 Component: main
 Origin: GitHub
 Label: LPA GitHub apt repo
-Architecture: armhf
+Architecture: source
 Description: PPA-like LPA repository built from GitHub Actions

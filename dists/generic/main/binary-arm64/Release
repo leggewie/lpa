@@ -1,6 +1,6 @@
 Archive: stable
 Component: main
 Origin: GitHub
-Label: Leggewie GitHub APT Repo
+Label: LPA GitHub apt repo
 Architecture: arm64
-Description: PPA-like repository built from GitHub Actions
+Description: PPA-like LPA repository built from GitHub Actions
