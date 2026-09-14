@@ -1,0 +1,6 @@
+Archive: stable
+Component: main
+Origin: GitHub
+Label: Leggewie GitHub APT Repo
+Architecture: arm64
+Description: PPA-like repository built from GitHub Actions

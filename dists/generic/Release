@@ -1,0 +1,38 @@
+Origin: GitHub
+Label: Leggewie GitHub APT Repo
+Suite: stable
+Codename: generic
+Date: Mon, 14 Sep 2026 04:07:37 UTC
+Architectures: amd64 arm64 armhf
+Components: main
+Description: PPA-like repository built from GitHub Actions
+MD5Sum:
+ 73dd58128e94f270e6696a8f68541df4 638 main/binary-amd64/Packages
+ 7648df61d4305426f36665b5c71cc015 441 main/binary-amd64/Packages.gz
+ f2c7d3a4733cf2399e2306dbf9e5b630 158 main/binary-amd64/Release
+ 73dd58128e94f270e6696a8f68541df4 638 main/binary-arm64/Packages
+ 7648df61d4305426f36665b5c71cc015 441 main/binary-arm64/Packages.gz
+ babb4247db5dc579a2804801d796dee2 158 main/binary-arm64/Release
+ 73dd58128e94f270e6696a8f68541df4 638 main/binary-armhf/Packages
+ 7648df61d4305426f36665b5c71cc015 441 main/binary-armhf/Packages.gz
+ 489ffb270f106b405ec9b2fe20b42da8 158 main/binary-armhf/Release
+SHA1:
+ 034bda865798cef07e01275a45074f30c56617bf 638 main/binary-amd64/Packages
+ 3e64c5421915b81b8d3b4791c78369568876cd26 441 main/binary-amd64/Packages.gz
+ a11aedc975dedb40134eb8a4dc0219cc69facbc3 158 main/binary-amd64/Release
+ 034bda865798cef07e01275a45074f30c56617bf 638 main/binary-arm64/Packages
+ 3e64c5421915b81b8d3b4791c78369568876cd26 441 main/binary-arm64/Packages.gz
+ a9f35ff7c4c41a693687f0dfb2a6fd51b7fa299e 158 main/binary-arm64/Release
+ 034bda865798cef07e01275a45074f30c56617bf 638 main/binary-armhf/Packages
+ 3e64c5421915b81b8d3b4791c78369568876cd26 441 main/binary-armhf/Packages.gz
+ b90a2b6df65914e52259a5ba1ba617bf6c103dc8 158 main/binary-armhf/Release
+SHA256:
+ afdc5463f8afc9958f2fc29ee83b3a6a76d85e7a6641b5b6bbc052756f4310d1 638 main/binary-amd64/Packages
+ 2b5fa2e565d3cb2bcf27091ca0062742beb2c17a7d84185c8ac1cb6f98dc19b6 441 main/binary-amd64/Packages.gz
+ c12e3558de0b7860b2498fced6e78d14d92235ba6d356000e8906d7a8bbe0af7 158 main/binary-amd64/Release
+ afdc5463f8afc9958f2fc29ee83b3a6a76d85e7a6641b5b6bbc052756f4310d1 638 main/binary-arm64/Packages
+ 2b5fa2e565d3cb2bcf27091ca0062742beb2c17a7d84185c8ac1cb6f98dc19b6 441 main/binary-arm64/Packages.gz
+ af75900ff294130477b2af1f8d842b7874bf79a479e04372fded09d66a7d6ca8 158 main/binary-arm64/Release
+ afdc5463f8afc9958f2fc29ee83b3a6a76d85e7a6641b5b6bbc052756f4310d1 638 main/binary-armhf/Packages
+ 2b5fa2e565d3cb2bcf27091ca0062742beb2c17a7d84185c8ac1cb6f98dc19b6 441 main/binary-armhf/Packages.gz
+ 0e2a138812554bf706b9b7a3651c45e32f5609b5815d408552b4bf50512a2f80 158 main/binary-armhf/Release
