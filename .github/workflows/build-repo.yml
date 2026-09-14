@@ -17,7 +17,7 @@ jobs:
   publish:
     runs-on: ubuntu-24.04
     # github secrets are really stupid
-    environment: test
+    environment: gh-pages
     steps:
       - name: Install repository tools
         run: |
