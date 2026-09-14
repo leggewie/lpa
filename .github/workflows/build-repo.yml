@@ -36,7 +36,22 @@ jobs:
             exit 1
           fi
 
-          echo "$REPO_SIGNING_KEY" | gpg --batch --import --passphrase "$GPG_PASSPHRASE" --passphrase-fd 0
+          echo "$REPO_SIGNING_KEY" | gpg --batch --import
+
+#      - name: Import GPG signing key
+#        env:
+#          REPO_SIGNING_KEY: ${{ secrets.REPO_SIGNING_KEY }}
+#          GPG_PASSPHRASE: ${{ secrets.REPO_SIGNING_PASSPHRASE }}
+#        run: |
+#          mkdir -p ~/.gnupg
+#          chmod 700 ~/.gnupg
+#          echo "$REPO_SIGNING_KEY" | wc -l
+#          if [ -z "$REPO_SIGNING_KEY" ]; then
+#            echo "ERROR: REPO_SIGNING_KEY secret is not set or empty"
+#            exit 1
+#          fi
+#
+#          echo "$REPO_SIGNING_KEY" | gpg --batch --import --passphrase "$GPG_PASSPHRASE" --passphrase-fd 0
 
       - name: Configure gpg-agent for signing
         run: |
