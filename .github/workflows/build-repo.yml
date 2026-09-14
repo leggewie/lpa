@@ -215,6 +215,7 @@ jobs:
           Codename: generic
           Architectures: amd64 arm64 armhf source
           Components: main
+          Sections: metapackages
           Description: PPA-like LPA repository built from GitHub Actions
           SignWith: ${SIGNING_KEY}
           EOF
