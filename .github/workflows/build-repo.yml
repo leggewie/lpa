@@ -5,9 +5,6 @@ on:
     branches: [ master ]
   workflow_dispatch:
 
-#permissions:
-#  contents: write
-
 env:
   RELEASE: generic
   SUPPORTED_ARCHES: amd64 arm64 armhf
@@ -126,23 +123,30 @@ jobs:
         run: |
           set -euxo pipefail
           sudo apt-get update
-          sudo apt-get install -y reprepro gnupg rsync
+          sudo apt-get install -y reprepro gnupg gpg-agent
 
       - name: Import GPG signing key
+        env:
+          REPO_SIGNING_KEY: ${{ secrets.REPO_SIGNING_KEY }}
         run: |
           mkdir -p ~/.gnupg
           chmod 700 ~/.gnupg
           echo "$REPO_SIGNING_KEY" | gpg --batch --import
-        env:
-          REPO_SIGNING_KEY: ${{ secrets.REPO_SIGNING_KEY }}
 
       - name: Configure gpg-agent for signing
+        env:
+          GPG_PASSPHRASE: ${{ secrets.REPO_SIGNING_PASSPHRASE }}
         run: |
           cat > ~/.gnupg/gpg-agent.conf <<'EOF'
           allow-loopback-pinentry
+          default-cache-ttl 600
+          max-cache-ttl 3600
           no-tty
           EOF
           gpgconf --kill gpg-agent || true
+
+          # Give gpg-agent time to restart
+          sleep 1
 
       # reprepro does not understand the 'all' architecture specification
       # specifically list all published arches instead. https://serverfault.com/questions/279153/
