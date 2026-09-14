@@ -10,12 +10,26 @@ env:
   SUPPORTED_ARCHES: amd64 arm64 armhf
   SIGNING_KEY: 104C6DC95DD59599A96FD9F82777C04CF040B50D
 
-#    steps:
-
 jobs:
 
-########################################################
+  check-published:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: gh-pages
+      - name: List published packages
+        run: |
+          set -euxo pipefail
+          # XXX: better check the InRelease files
+          find pool/main -name '*.dsc' | sort > published-packages.txt
+          cat published-packages.txt
+#      - uses: actions/upload-artifact@v4
+#        with:
+#          name: published-packages
+#          path: published-packages.txt
 
+########################################################
 
   importGPG:
     runs-on: ubuntu-24.04
@@ -67,7 +81,7 @@ jobs:
 
 
   source:
-    needs: [importGPG]
+    needs: [importGPG, check-published]
     runs-on: ubuntu-24.04-arm
     steps:
       - name: Checkout source
@@ -106,7 +120,7 @@ jobs:
           path: out/source/
 
   build_any:
-    needs: [importGPG]
+    needs: [importGPG, check-published]
     strategy:
       fail-fast: false
       matrix:

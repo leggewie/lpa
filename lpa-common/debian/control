@@ -1,6 +1,6 @@
 Maintainer: Rolf Leggewie <foss@leggewie.org>
-Section: misc
 Source: lpa-common
+Section: misc
 Priority: optional
 Standards-Version: 4.6.2
 Build-Depends: debhelper-compat (= 13)
