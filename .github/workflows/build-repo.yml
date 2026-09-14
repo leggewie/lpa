@@ -238,6 +238,8 @@ jobs:
           set -euxo pipefail
           shopt -s nullglob
           find artifacts -name '*.deb' -print0 | xargs -0 -r reprepro -b repo includedeb generic
+          find artifacts -name '*.dsc' -exec cat {} \;
+          echo "content of dsc files above this line"
           find artifacts -name '*.dsc' -print0 | xargs -0 -r reprepro -b repo includedsc generic
           find repo/ # XXX: for verification
           rm -Rf ./repo/conf/ ./repo/db/
