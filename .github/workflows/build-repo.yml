@@ -98,7 +98,7 @@ jobs:
 
           for pkgdir in */; do
             if [[ -f "${pkgdir}debian/control" ]]; then
-              (cd "$pkgdir" && dpkg-buildpackage -b -us -uc -a${{ matrix.arch }} ${{ matrix.extra_args }})
+              (cd "$pkgdir" && dpkg-buildpackage -B -us -uc -a${{ matrix.arch }} ${{ matrix.extra_args }})
               mv -v *.deb *.changes *.buildinfo out/binary-${{ matrix.arch }}/ || true
             fi
           done
