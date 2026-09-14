@@ -1,0 +1,40 @@
+name: test importation of GPG key
+
+on:
+  push:
+    branches: [ test ]
+  workflow_dispatch:
+
+env:
+  RELEASE: generic
+  SUPPORTED_ARCHES: amd64 arm64 armhf
+  SIGNING_KEY: 104C6DC95DD59599A96FD9F82777C04CF040B50D
+
+#    steps:
+
+jobs:
+
+  publish:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Install repository tools
+        run: |
+          set -euxo pipefail
+          sudo apt-get update
+          sudo apt-get install -y gnupg
+
+      - name: Import GPG signing key
+        run: |
+          mkdir -p ~/.gnupg
+          chmod 700 ~/.gnupg
+          echo "$REPO_SIGNING_KEY" | gpg --batch --import
+        env:
+          REPO_SIGNING_KEY: ${{ secrets.REPO_SIGNING_KEY }}
+
+      - name: Configure gpg-agent for signing
+        run: |
+          cat > ~/.gnupg/gpg-agent.conf <<'EOF'
+          allow-loopback-pinentry
+          no-tty
+          EOF
+          gpgconf --kill gpg-agent || true
