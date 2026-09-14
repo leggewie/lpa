@@ -5,6 +5,9 @@ on:
     branches: [ test ]
   workflow_dispatch:
 
+# github secrets are really stupid
+environment: test
+
 env:
   RELEASE: generic
   SUPPORTED_ARCHES: amd64 arm64 armhf
