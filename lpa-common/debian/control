@@ -16,3 +16,10 @@ Priority: required
 Architecture: all
 Recommends:
  nano
+
+Package: lpa-fake-binary
+Description: fake package for testing binary compilation
+Priority: optional
+Architecture: any
+Recommends:
+ tmux
