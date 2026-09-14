@@ -24,6 +24,9 @@ jobs:
           sudo apt-get install -y gnupg
 
       - name: Import GPG signing key
+        env:
+          REPO_SIGNING_KEY: ${{ secrets.REPO_SIGNING_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.REPO_SIGNING_PASSPHRASE }}
         run: |
           mkdir -p ~/.gnupg
           chmod 700 ~/.gnupg
