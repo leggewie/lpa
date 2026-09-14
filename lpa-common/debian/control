@@ -13,6 +13,7 @@ Description: Packages I want to have installed on all computers
  Packages in Depends create a minimal system, enhanced by those in Recommends
  This could be used to separate a minimal from an everyday system.
 Priority: required
+Section: misc
 Architecture: all
 Recommends:
  nano
@@ -20,6 +21,7 @@ Recommends:
 Package: lpa-fake-binary
 Description: fake package for testing binary compilation
 Priority: optional
+Section: misc
 Architecture: any
 Recommends:
  tmux
