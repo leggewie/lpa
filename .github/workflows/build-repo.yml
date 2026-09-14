@@ -56,16 +56,34 @@ jobs:
 #          echo "$REPO_SIGNING_KEY" | gpg --batch --import --passphrase "$GPG_PASSPHRASE" --passphrase-fd 0
 
       - name: Configure gpg-agent for signing
+        env:
+          GPG_PASSPHRASE: ${{ secrets.REPO_SIGNING_PASSPHRASE }}
         run: |
           cat > ~/.gnupg/gpg-agent.conf <<'EOF'
           allow-loopback-pinentry
-          no-tty
           default-cache-ttl 3600
           max-cache-ttl 86400
           EOF
           gpgconf --kill gpg-agent || true
 
+          # Give gpg-agent time to restart
+          sleep 1
+
           # Unlock the key by signing a test file - this caches the passphrase
-          echo "test" | gpg --batch --passphrase "$GPG_PASSPHRASE" --sign | wc -l
           echo "test" | gpg --batch --passphrase "$GPG_PASSPHRASE" --sign > /dev/null
           # Passphrase is now cached in gpg-agent for this session
+
+#      - name: Configure gpg-agent for signing
+#        run: |
+#          cat > ~/.gnupg/gpg-agent.conf <<'EOF'
+#          allow-loopback-pinentry
+#          no-tty
+#          default-cache-ttl 3600
+#          max-cache-ttl 86400
+#          EOF
+#          gpgconf --kill gpg-agent || true
+#
+#          # Unlock the key by signing a test file - this caches the passphrase
+#          echo "test" | gpg --batch --passphrase "$GPG_PASSPHRASE" --sign | wc -l
+#          echo "test" | gpg --batch --passphrase "$GPG_PASSPHRASE" --sign > /dev/null
+#          # Passphrase is now cached in gpg-agent for this session
