@@ -111,7 +111,7 @@ jobs:
           for pkgdir in */; do
             if [[ -f "${pkgdir}debian/control" ]]; then
               (cd "$pkgdir" && dpkg-buildpackage -g -us -uc)
-              mv -v *.dsc *.debian.tar.* *.orig.tar.* *.changes *.buildinfo out/source/ || true
+              mv -v *.dsc *.tar.* *.changes *.buildinfo out/source/ || true
             fi
           done
 
