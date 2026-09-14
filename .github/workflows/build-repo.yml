@@ -14,10 +14,10 @@ env:
 
 jobs:
 
-  publish:
+  importGPG:
     runs-on: ubuntu-24.04
     # github secrets are really stupid
-    environment: gh-pages
+    environment: test
     steps:
       - name: Install repository tools
         run: |
