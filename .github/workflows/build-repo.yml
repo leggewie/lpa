@@ -68,7 +68,7 @@ jobs:
 
   source:
     needs: [importGPG]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     steps:
       - name: Checkout source
         uses: actions/checkout@v5
@@ -203,6 +203,10 @@ jobs:
 
           # Give gpg-agent time to restart
           sleep 1
+
+          # Unlock the key by signing a test stream - this caches the passphrase
+          echo "test" | gpg --batch --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --sign > /dev/null
+          # Passphrase is now cached in gpg-agent for this session
 
       # reprepro does not understand the 'all' architecture specification
       # specifically list all published arches instead. https://serverfault.com/questions/279153/
