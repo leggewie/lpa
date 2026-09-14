@@ -13,7 +13,61 @@ env:
 #    steps:
 
 jobs:
+
+########################################################
+
+
+  importGPG:
+    runs-on: ubuntu-24.04
+    # github secrets are really stupid
+    environment: test
+    steps:
+      - name: Install repository tools
+        run: |
+          set -euxo pipefail
+          sudo apt-get update
+          sudo apt-get install -y gnupg gpg-agent
+
+      - name: Import GPG signing key
+        env:
+          REPO_SIGNING_KEY: ${{ secrets.REPO_SIGNING_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.REPO_SIGNING_PASSPHRASE }}
+        run: |
+          mkdir -p ~/.gnupg
+          chmod 700 ~/.gnupg
+          echo "$REPO_SIGNING_KEY" | wc -l
+          if [ -z "$REPO_SIGNING_KEY" ]; then
+            echo "ERROR: REPO_SIGNING_KEY secret is not set or empty"
+            exit 1
+          fi
+
+          echo "$REPO_SIGNING_KEY" | gpg --batch --import
+
+      - name: Configure gpg-agent for signing
+        env:
+          GPG_PASSPHRASE: ${{ secrets.REPO_SIGNING_PASSPHRASE }}
+        run: |
+          cat > ~/.gnupg/gpg-agent.conf <<'EOF'
+          allow-loopback-pinentry
+          default-cache-ttl 3600
+          max-cache-ttl 86400
+          EOF
+          gpgconf --kill gpg-agent || true
+
+          # Give gpg-agent time to restart
+          sleep 1
+
+          # Unlock the key by signing a test file - this caches the passphrase
+          echo "test" | gpg --batch --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --sign  > /dev/null
+          # Passphrase is now cached in gpg-agent for this session
+
+
+
+########################################################
+
+
   source:
+    needs: [importGPG]
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout source
@@ -52,6 +106,7 @@ jobs:
           path: out/source/
 
   build_any:
+    needs: [importGPG]
     strategy:
       fail-fast: false
       matrix:
@@ -107,6 +162,7 @@ jobs:
 
   publish:
     needs: [source, build_any]
+    environment: test
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
