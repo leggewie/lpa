@@ -27,6 +27,12 @@ jobs:
         run: |
           mkdir -p ~/.gnupg
           chmod 700 ~/.gnupg
+          if [ -z "$REPO_SIGNING_KEY" ]; then
+            echo "ERROR: REPO_SIGNING_KEY secret is not set or empty"
+            echo "$REPO_SIGNING_KEY" | wc -l
+            exit 1
+          fi
+
           echo "$REPO_SIGNING_KEY" | gpg --batch --import
         env:
           REPO_SIGNING_KEY: ${{ secrets.REPO_SIGNING_KEY }}
