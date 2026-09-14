@@ -1,4 +1,4 @@
-name: build-and-publish-repo
+name: build and publish LPA apt repo
 
 on:
   push:
@@ -8,12 +8,16 @@ on:
 #permissions:
 #  contents: write
 
-jobs:
-  build:
-    runs-on: ubuntu-24.04
-#    env:
-#      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+env:
+  RELEASE: generic
+  SUPPORTED_ARCHES: amd64 arm64 armhf
+  SIGNING_KEY: 104C6DC95DD59599A96FD9F82777C04CF040B50D
 
+#    steps:
+
+jobs:
+  source:
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout source
         uses: actions/checkout@v5
@@ -22,48 +26,107 @@ jobs:
 
       - name: Install build deps
         run: |
+          set -euxo pipefail
           sudo apt-get update
           sudo apt-get install -y \
-            build-essential debhelper devscripts fakeroot \
-            reprepro dpkg-dev lintian
+            build-essential \
+            debhelper \
+            devscripts \
+            dpkg-dev \
+            lintian
 
-      - name: Build packages
+      - name: Build source and all packages
         run: |
-          set -euo pipefail
-          rm -rf out
-          mkdir -p out
-
+          set -euxo pipefail
           shopt -s nullglob
-          for d in */ ; do
-            if [ ! -f "$d/debian/control" ]; then
-              continue
+
+          mkdir -p out/source
+
+          for pkgdir in */; do
+            if [[ -f "${pkgdir}debian/control" ]]; then
+              (cd "$pkgdir" && dpkg-buildpackage -S -us -uc -B)
+              mv -v *.dsc *.debian.tar.* *.orig.tar.* *.changes *.buildinfo out/source/ || true
             fi
-
-            echo "Building $d"
-            (
-              cd "$d"
-              dpkg-buildpackage -us -uc -b
-            )
-
-            cp -v ./*.deb ./*.dsc ./*.tar.* ./*.changes ./*.buildinfo ./out/ 2>/dev/null || true
-
           done
 
-      # reprepro does not understand the 'all' architecture specification
-      # specifically list all published arches instead. https://serverfault.com/questions/279153/
-      - name: Initialize reprepro repo
+      - uses: actions/upload-artifact@v4
+        with:
+          name: source-packages
+          path: out/source/
+
+  build_any:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runs_on: ubuntu-24.04
+            host_arch: amd64
+          - arch: arm64
+            runs_on: ubuntu-24.04-arm
+            host_arch: arm64
+          - arch: armhf
+            runs_on: ubuntu-24.04-arm
+            host_arch: armhf
+            extra_args: --host-arch=armhf
+    runs-on: ${{ matrix.runs_on }}
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install build deps
         run: |
-          mkdir -p repo/conf
-          cat > repo/conf/distributions <<'EOF'
-          Origin: GitHub
-          Label: Leggewie GitHub APT Repo
-          Suite: stable
-          Codename: generic
-          Architectures: amd64 arm64 armhf
-          Components: main
-          Description: PPA-like repository built from GitHub Actions
-          SignWith: 104C6DC95DD59599A96FD9F82777C04CF040B50D
-          EOF
+          set -euxo pipefail
+          sudo dpkg --add-architecture ${{ matrix.host_arch }}
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            debhelper \
+            devscripts \
+            dpkg-dev \
+            lintian \
+            crossbuild-essential-armhf
+
+      - name: Build arch-dependent packages
+        run: |
+          set -euxo pipefail
+          shopt -s nullglob
+
+          mkdir -p out/binary-${{ matrix.arch }}
+
+          for pkgdir in */; do
+            if [[ -f "${pkgdir}debian/control" ]]; then
+              (cd "$pkgdir" && dpkg-buildpackage -b -us -uc -a${{ matrix.arch }} ${{ matrix.extra_args }})
+              mv -v *.deb *.changes *.buildinfo out/binary-${{ matrix.arch }}/ || true
+            fi
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: binary-${{ matrix.arch }}
+          path: out/binary-${{ matrix.arch }}/
+
+  publish:
+    needs: [source, build_any]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: gh-pages
+          fetch-depth: 0
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Install repository tools
+        run: |
+          set -euxo pipefail
+          sudo apt-get update
+          sudo apt-get install -y reprepro gnupg rsync
 
       - name: Import GPG signing key
         run: |
@@ -77,23 +140,36 @@ jobs:
         run: |
           cat > ~/.gnupg/gpg-agent.conf <<'EOF'
           allow-loopback-pinentry
+          no-tty
           EOF
           gpgconf --kill gpg-agent || true
 
+      # reprepro does not understand the 'all' architecture specification
+      # specifically list all published arches instead. https://serverfault.com/questions/279153/
+      - name: Prepare reprepro repository
+        run: |
+          set -euxo pipefail
+          mkdir -p repo/conf
+
+          cat > repo/conf/distributions <<EOF
+          Origin: GitHub
+          Label: LPA GitHub apt repo
+          Suite: stable
+          Codename: generic
+          Architectures: amd64 arm64 armhf source
+          Components: main
+          Description: PPA-like LPA repository built from GitHub Actions
+          SignWith: ${SIGNING_KEY}
+          EOF
+
       - name: Import packages
         run: |
-          set -euo pipefail
+          set -euxo pipefail
           shopt -s nullglob
-
-          for deb in out/*.deb; do
-            reprepro -b repo includedeb generic "$deb"
-          done
-
-          for dsc in out/*.dsc; do
-            reprepro -b repo includedsc generic "$dsc"
-          done
-
-          rm -Rf ./repo/conf/ ./repo/db/ || true
+          find artifacts -name '*.deb' -print0 | xargs -0 -r reprepro -b repo includedeb generic
+          find artifacts -name '*.dsc' -print0 | xargs -0 -r reprepro -b repo includedsc generic
+          find repo/ # XXX: for verification
+          rm -Rf ./repo/conf/ ./repo/db/
 
       - name: Publish to gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
@@ -101,3 +177,14 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./repo
           publish_branch: gh-pages
+#      - name: Publish to gh-pages
+#        run: |
+#          set -euxo pipefail
+#
+#          rsync -a --delete repo/ ./
+#          git config user.name "github-actions[bot]"
+#          git config user.email "github-actions[bot]@users.noreply.github.com"
+#
+#          git add -A
+#          git commit -m "Update APT repository" || exit 0
+#          git push origin gh-pages
