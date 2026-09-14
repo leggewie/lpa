@@ -70,7 +70,7 @@ jobs:
           sleep 1
 
           # Unlock the key by signing a test file - this caches the passphrase
-          echo "test" | gpg --batch --passphrase "$GPG_PASSPHRASE" --sign > /dev/null
+          echo "test" | gpg --batch --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --sign  > /dev/null
           # Passphrase is now cached in gpg-agent for this session
 
 #      - name: Configure gpg-agent for signing
