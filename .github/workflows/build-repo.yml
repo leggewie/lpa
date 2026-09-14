@@ -45,13 +45,12 @@ jobs:
               dpkg-buildpackage -us -uc -b
             )
 
-            cp -v ./*.deb ../out/ 2>/dev/null || true
-            cp -v ./*.dsc ../out/ 2>/dev/null || true
-            cp -v ./*.tar.* ../out/ 2>/dev/null || true
-            cp -v ./*.changes ../out/ 2>/dev/null || true
-            cp -v ./*.buildinfo ../out/ 2>/dev/null || true
+            cp -v ./*.deb ./*.dsc ./*.tar.* ./*.changes ./*.buildinfo ./out/ 2>/dev/null || true
+
           done
 
+      # reprepro does not understand the 'all' architecture specification
+      # specifically list all published arches instead. https://serverfault.com/questions/279153/
       - name: Initialize reprepro repo
         run: |
           mkdir -p repo/conf
@@ -60,10 +59,10 @@ jobs:
           Label: Leggewie GitHub APT Repo
           Suite: stable
           Codename: generic
-          Architectures: amd64 arm64 armhf all
+          Architectures: amd64 arm64 armhf
           Components: main
           Description: PPA-like repository built from GitHub Actions
-          SignWith: no
+          #SignWith: no
           EOF
 
       - name: Import packages
@@ -78,6 +77,8 @@ jobs:
           for dsc in out/*.dsc; do
             reprepro -b repo includedsc generic "$dsc"
           done
+
+          rm -Rf ./repo/conf/ ./repo/db/ || true
 
       - name: Publish to gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
