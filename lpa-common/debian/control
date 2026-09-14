@@ -1,5 +1,5 @@
 Maintainer: Rolf Leggewie <foss@leggewie.org>
-Section: metapackages
+Section: misc
 Source: lpa-common
 Priority: optional
 Standards-Version: 4.6.2
